@@ -15,7 +15,7 @@ class Solution:
         while True:
             if numbers[left] + numbers[right] == target:
                 return [left + 1, right + 1]
-            elif numbers[left] + numbers[right] >= target:
+            elif numbers[left] + numbers[right] > target:
                 right -= 1
             else:
                 left += 1
