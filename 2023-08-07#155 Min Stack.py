@@ -53,8 +53,8 @@ class MinStack(object): ## T: 20.54% M: 5.06% 2-times faster than wihout np
         """
         return np.min(self.content)
 '''
-
-class MinStack: ## T: 92.9% M: 79.25% https://leetcode.com/Swap24/
+#@Swap24 https://leetcode.com/Swap24/
+class MinStack: ## T: 92.9% M: 79.25% 
 
     def __init__(self):
         """
