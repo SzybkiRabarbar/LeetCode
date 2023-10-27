@@ -50,7 +50,7 @@ if __name__=="__main__":
     d = date.today()
     
     c = scrap_leetcode(input("Link: "))
-    name = f"{d}#{c[0].replace('.', '', 1)}.py"
+    name = f"{d}_{c[0].replace('.', '', 1)}.py"
     with open(name, 'w') as file:
         file.write(c[1])
     print(f"'{name}' created")
