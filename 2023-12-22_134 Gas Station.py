@@ -1,6 +1,6 @@
 # https://leetcode.com/problems/gas-station/
 
-class Solution:
+class Solution:  # T: 99.99% M: 6.16%
     def canCompleteCircuit(self, gas: list[int], cost: list[int]) -> int:
         value = []
         max_ = 0
@@ -22,10 +22,6 @@ class Solution:
                 continue
             temp += value[pointer]
             if temp > 0:
-                temp_list.append(pointer)
-            elif ((pointer == max_ - 1 or
-                    max_ == 0 and pointer == len(value) - 1) and
-                    temp == 0):
                 temp_list.append(pointer)
             else:
                 temp = 0
