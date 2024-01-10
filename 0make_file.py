@@ -14,44 +14,62 @@ from selenium.webdriver.support import expected_conditions as EC
 def scrap_leetcode(link):
     option = Options()
     option.add_argument('-headless')
-    
+
     browser = webdriver.Firefox(options=option)
     browser.get(link)
-    sleep(4)
-    css_selector = '.flex.cursor-pointer.items-center.rounded.text-left.focus\:outline-none.whitespace-nowrap.text-label-2.dark\:text-dark-label-2.bg-transparent.dark\:bg-dark-transparent.hover\:bg-transparent.dark\:hover\:bg-transparent.hover\:text-label-1.dark\:hover\:text-dark-label-1.active\:bg-transparent.dark\:active\:bg-dark-transparent.ml-2.px-2.py-1\\.5.pr-1.font-medium.text-xs.group'
-    
-    button = WebDriverWait(browser, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, css_selector)))    
-    button.click()
+    sleep(3)
 
-    elements = browser.find_elements(By.CSS_SELECTOR, '.relative.flex.h-8.cursor-pointer.select-none.py-1\\.5.pl-2.text-label-2.dark\\:text-dark-label-2')
+    try:  # Try close new introducion and tutorial
+        enable_button = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".font-medium.items-center.whitespace-nowrap.focus\\:outline-none.inline-flex.bg-fill-3.dark\\:bg-dark-fill-3.hover\\:bg-fill-2.dark\\:hover\\:bg-dark-fill-2.dark\\:text-dark-label-2.rounded-full.px-10.py-\\[14px\\].text-xl.text-white"))
+        )
+        enable_button.click()
 
-    for element in elements:
-        if 'Python3' in element.text:
-            element.click()
-            break
+        skip_button = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR,
+                                            "button[data-action='skip']"))
+        )
+        skip_button.click()
+    except Exception as e:
+        print(f"Wystąpił błąd: {e}")
+
+    cpp_button = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//button[contains(text(), 'C++')]"))
+    )
+    cpp_button.click()
+
+    python3_div = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.XPATH,
+                                        "//div[contains(text(), 'Python3')]"))
+    )
+    python3_div.click()
+
     sleep(1)
     html = browser.page_source
     browser.quit()
 
     soup = BeautifulSoup(html, 'html.parser')
-    title = soup.find('a', {'class': 'mr-2 text-label-1 dark:text-dark-label-1 hover:text-label-1 dark:hover:text-dark-label-1 text-lg font-medium'})
-    content = soup.find('div', {'class': 'view-lines monaco-mouse-cursor-text'})
-    
+
+    title = soup.find('a', {'class': "no-underline hover:text-blue-s dark:hover:text-dark-blue-s truncate cursor-text whitespace-normal hover:!text-[inherit]"})
     title = re.sub('<.*?>', '', str(title))
-    # print(title)
-    
-    content = [unescape(x) for x in re.sub('<.*?>', '<>', str(content)).replace('\xa0', ' ').split('<>') if x]
-    content = f"# {link}\n" + ''.join(['\n' + x if x.startswith(('    ', 'class', '#')) else x for x in content])
-    # print(content)
+
+    content = soup.find('div', {'class':
+                                'view-lines monaco-mouse-cursor-text'})
+    content = re.sub('<.*?>', '<>', str(content)).replace('\xa0', ' ')
+    content = [unescape(x) for x in content.split('<>') if x]
+    content = f"# {link}\n" + ''.join(
+        ['\n' + x if x.startswith(('    ', 'class', '#')) else x
+            for x in content])
+
     return (title, content)
-    
-if __name__=="__main__":
-    
+
+
+if __name__ == "__main__":
+
     d = date.today()
-    
     c = scrap_leetcode(input("Link: "))
     name = f"{d}_{c[0].replace('.', '', 1)}.py"
     with open(name, 'w') as file:
         file.write(c[1])
     print(f"'{name}' created")
-    
